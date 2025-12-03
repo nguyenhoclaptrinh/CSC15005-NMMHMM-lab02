@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	clientinternal "secure_notes/client/internalpkg"
+	clientinternal "secure-notes-client/internal"
 )
 
 func main() {

@@ -2,9 +2,8 @@ package main
 
 import (
 	"log"
-	"secure_notes/server/config"
-	serverinternal "secure_notes/server/internalpkg"
-	"secure_notes/server/storage"
+	"secure-notes-server/config"
+	serverpkg "secure-notes-server/pkg"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +16,7 @@ func main() {
 	}
 
 	// 2. Init SQLite DB
-	db, err := storage.InitDB(cfg.DBPath)
+	db, err := serverpkg.InitDB(cfg.DBPath)
 	if err != nil {
 		log.Fatal("Failed to init DB:", err)
 	}
@@ -27,19 +26,19 @@ func main() {
 	r := gin.Default()
 
 	// 4. Auth routes
-	r.POST("/api/register", serverinternal.Register)
-	r.POST("/api/login", serverinternal.Login)
+	r.POST("/api/register", serverpkg.Register)
+	r.POST("/api/login", serverpkg.Login)
 
 	// 5. Notes routes
 	notes := r.Group("/api/notes")
 	{
-		notes.GET("", serverinternal.ListNotes)
-		notes.POST("", serverinternal.UploadNote)
-		notes.GET("/:id", serverinternal.GetNote)
-		notes.DELETE("/:id", serverinternal.DeleteNote)
-		notes.POST("/:id/share", serverinternal.ShareNote)
-		notes.GET("/:id/share", serverinternal.ListShares)
-		notes.DELETE("/:id/share/:share_id", serverinternal.RevokeShare)
+		notes.GET("", serverpkg.ListNotes)
+		notes.POST("", serverpkg.UploadNote)
+		notes.GET("/:id", serverpkg.GetNote)
+		notes.DELETE("/:id", serverpkg.DeleteNote)
+		notes.POST("/:id/share", serverpkg.ShareNote)
+		notes.GET("/:id/share", serverpkg.ListShares)
+		notes.DELETE("/:id/share/:share_id", serverpkg.RevokeShare)
 	}
 
 	// 6. Temp URL access (may be anonymous) - not implemented

@@ -9,7 +9,7 @@ project-root/
 ├── client/      # CLI client (Go, tách biệt go.mod)
 ├── server/      # Backend API server (Go, tách biệt go.mod)
 ├── docs/        # Tài liệu, sơ đồ, API spec
-├── test/        # Test chung (nếu có)
+├── test/        # Test chung (server và client)
 ├── Makefile     # Lệnh build/test nhanh (nếu dùng)
 └── README.md    # File này
 ```
