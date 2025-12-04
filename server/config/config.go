@@ -152,10 +152,10 @@ func CleanupExpiredData(db *sql.DB) error {
 	queries := []string{
 		// Xóa shared_links đã hết hạn
 		`DELETE FROM shared_links WHERE expires_at < CURRENT_TIMESTAMP AND expires_at IS NOT NULL`,
-		
+
 		// Xóa refresh_tokens đã hết hạn
 		`DELETE FROM refresh_tokens WHERE expires_at < CURRENT_TIMESTAMP`,
-		
+
 		// Xóa JWT blacklist đã hết hạn
 		`DELETE FROM token_blacklist WHERE expires_at < CURRENT_TIMESTAMP`,
 	}
