@@ -1,33 +1,247 @@
--- Seed data cho cơ sở dữ liệu Secure Notes
--- Dữ liệu mẫu để test và phát triển
+-- =====================================================
+-- SEED DATA - Secure Notes Database
+-- Dữ liệu mẫu để test và development
+-- =====================================================
 
--- Dữ liệu mẫu cho bảng users (sử dụng UUID string cho id)
-INSERT INTO users (id, public_key, username, password) VALUES 
-('550e8400-e29b-41d4-a716-446655440001', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5K', 'admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('550e8400-e29b-41d4-a716-446655440002', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7L', 'user1', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('550e8400-e29b-41d4-a716-446655440003', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9M', 'user2', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('550e8400-e29b-41d4-a716-446655440004', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1N', 'testuser', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+-- =====================================================
+-- TABLE: users
+-- Password: "password123" (Argon2id hash)
+-- KDF Salt: Random hex string (dùng để derive K_Master ở client)
+-- =====================================================
+INSERT INTO users (id, username, password_hash, kdf_salt) VALUES 
+-- Admin user
+('550e8400-e29b-41d4-a716-446655440001', 
+ 'admin', 
+ '$argon2id$v=19$m=65536,t=3,p=4$c2FsdHNhbHRzYWx0MTIz$kCXUjmjg5xZqjJz8vZ4kY8h3FqL7rV9xN2mK8pQ1wYc',
+ 'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456'),
 
--- Dữ liệu mẫu cho bảng notes (sử dụng UUID string cho id và user_id)
-INSERT INTO notes (id, user_id, expire_at, filename, aes_key_encrypted) VALUES 
-('660e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440001', datetime('now', '+30 days'), 'important_note.txt', 'gAAAAABhZ2J3...encrypted_aes_key_1...'),
-('660e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440001', datetime('now', '+7 days'), 'meeting_notes.md', 'gAAAAABhZ2J4...encrypted_aes_key_2...'),
-('660e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440002', datetime('now', '+14 days'), 'personal_diary.txt', 'gAAAAABhZ2J5...encrypted_aes_key_3...'),
-('660e8400-e29b-41d4-a716-446655440004', '550e8400-e29b-41d4-a716-446655440002', NULL, 'permanent_note.txt', 'gAAAAABhZ2J6...encrypted_aes_key_4...'),
-('660e8400-e29b-41d4-a716-446655440005', '550e8400-e29b-41d4-a716-446655440003', datetime('now', '+60 days'), 'project_plan.md', 'gAAAAABhZ2J7...encrypted_aes_key_5...'),
-('660e8400-e29b-41d4-a716-446655440006', '550e8400-e29b-41d4-a716-446655440004', datetime('now', '+1 day'), 'temp_note.txt', 'gAAAAABhZ2J8...encrypted_aes_key_6...');
+-- Regular users
+('550e8400-e29b-41d4-a716-446655440002', 
+ 'alice', 
+ '$argon2id$v=19$m=65536,t=3,p=4$c2FsdHNhbHRzYWx0MTIz$kCXUjmjg5xZqjJz8vZ4kY8h3FqL7rV9xN2mK8pQ1wYc',
+ 'b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef1234567'),
 
--- Dữ liệu mẫu cho bảng shares (sử dụng UUID string cho tất cả foreign key)
-INSERT INTO shares (id, note_id, expire_at, shared_to_user_id, aes_key_encrypted, url_token) VALUES 
-('770e8400-e29b-41d4-a716-446655440001', '660e8400-e29b-41d4-a716-446655440001', datetime('now', '+7 days'), '550e8400-e29b-41d4-a716-446655440002', 'gAAAAABhZ2K1...shared_aes_key_1...', 'abc123def456ghi789'),
-('770e8400-e29b-41d4-a716-446655440002', '660e8400-e29b-41d4-a716-446655440001', datetime('now', '+7 days'), '550e8400-e29b-41d4-a716-446655440003', 'gAAAAABhZ2K2...shared_aes_key_2...', 'def456ghi789jkl012'),
-('770e8400-e29b-41d4-a716-446655440003', '660e8400-e29b-41d4-a716-446655440003', datetime('now', '+3 days'), '550e8400-e29b-41d4-a716-446655440001', 'gAAAAABhZ2K3...shared_aes_key_3...', 'ghi789jkl012mno345'),
-('770e8400-e29b-41d4-a716-446655440004', '660e8400-e29b-41d4-a716-446655440005', datetime('now', '+30 days'), '550e8400-e29b-41d4-a716-446655440004', 'gAAAAABhZ2K4...shared_aes_key_4...', 'jkl012mno345pqr678'),
-('770e8400-e29b-41d4-a716-446655440005', '660e8400-e29b-41d4-a716-446655440002', NULL, '550e8400-e29b-41d4-a716-446655440004', 'gAAAAABhZ2K5...shared_aes_key_5...', 'mno345pqr678stu901');
+('550e8400-e29b-41d4-a716-446655440003', 
+ 'bob', 
+ '$argon2id$v=19$m=65536,t=3,p=4$c2FsdHNhbHRzYWx0MTIz$kCXUjmjg5xZqjJz8vZ4kY8h3FqL7rV9xN2mK8pQ1wYc',
+ 'c3d4e5f6789012345678901234567890abcdef1234567890abcdef12345678'),
 
--- Thêm một số dữ liệu test cho expired records
-INSERT INTO notes (id, user_id, expire_at, filename, aes_key_encrypted) VALUES 
-('660e8400-e29b-41d4-a716-446655440007', '550e8400-e29b-41d4-a716-446655440001', datetime('now', '-1 day'), 'expired_note.txt', 'gAAAAABhZ2J9...expired_aes_key...');
+('550e8400-e29b-41d4-a716-446655440004', 
+ 'charlie', 
+ '$argon2id$v=19$m=65536,t=3,p=4$c2FsdHNhbHRzYWx0MTIz$kCXUjmjg5xZqjJz8vZ4kY8h3FqL7rV9xN2mK8pQ1wYc',
+ 'd4e5f6789012345678901234567890abcdef1234567890abcdef123456789');
 
-INSERT INTO shares (id, note_id, expire_at, shared_to_user_id, aes_key_encrypted, url_token) VALUES 
-('770e8400-e29b-41d4-a716-446655440006', '660e8400-e29b-41d4-a716-446655440007', datetime('now', '-1 hour'), '550e8400-e29b-41d4-a716-446655440002', 'gAAAAABhZ2K6...expired_shared_key...', 'expired_token_123');
+-- =====================================================
+-- TABLE: user_keys
+-- Diffie-Hellman public keys (Base64 encoded)
+-- =====================================================
+INSERT INTO user_keys (user_id, public_key) VALUES 
+('550e8400-e29b-41d4-a716-446655440001', 
+ 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5KzVmGFqxqHqJ3kL+8VhQvX0M7jKZqPmN3wYlTuRV8'),
+
+('550e8400-e29b-41d4-a716-446655440002', 
+ 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7LnYpHFrtRsM4nO+9WhRwY1N8kPtZrQoP4yXmWsU9J'),
+
+('550e8400-e29b-41d4-a716-446655440003', 
+ 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9MqTzKJuvRtL5pP+0XiSxZ2O9lQvYsRpQ5zYnXtV0L'),
+
+('550e8400-e29b-41d4-a716-446655440004', 
+ 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1NrWuLKwxStN6qQ+1YjTyA3P0mRwZtSpR6AZoYuW1M');
+
+-- =====================================================
+-- TABLE: notes
+-- Encrypted notes with title, content, and wrapped keys
+-- IV Meta: JSON containing all IVs for AES-GCM operations
+-- =====================================================
+INSERT INTO notes (id, user_id, title_enc, content_enc, key_enc, iv_meta) VALUES 
+-- Admin's notes
+('660e8400-e29b-41d4-a716-446655440001', 
+ '550e8400-e29b-41d4-a716-446655440001',
+ 'U2FsdGVkX1+encrypted_title_data_1',
+ X'53616c7465645f5f656e637279707465645f636f6e74656e745f646174615f31',
+ 'gAAAAABhZ2J3...wrapped_K_Note_1...',
+ '{"iv_title":"abc123def456","iv_content":"def456ghi789","iv_key":"ghi789jkl012"}'),
+
+('660e8400-e29b-41d4-a716-446655440002', 
+ '550e8400-e29b-41d4-a716-446655440001',
+ 'U2FsdGVkX1+encrypted_title_data_2',
+ X'53616c7465645f5f656e637279707465645f636f6e74656e745f646174615f32',
+ 'gAAAAABhZ2J4...wrapped_K_Note_2...',
+ '{"iv_title":"jkl012mno345","iv_content":"mno345pqr678","iv_key":"pqr678stu901"}'),
+
+-- Alice's notes
+('660e8400-e29b-41d4-a716-446655440003', 
+ '550e8400-e29b-41d4-a716-446655440002',
+ 'U2FsdGVkX1+encrypted_title_data_3',
+ X'53616c7465645f5f656e637279707465645f636f6e74656e745f646174615f33',
+ 'gAAAAABhZ2J5...wrapped_K_Note_3...',
+ '{"iv_title":"stu901vwx234","iv_content":"vwx234yza567","iv_key":"yza567bcd890"}'),
+
+('660e8400-e29b-41d4-a716-446655440004', 
+ '550e8400-e29b-41d4-a716-446655440002',
+ 'U2FsdGVkX1+encrypted_title_data_4',
+ X'53616c7465645f5f656e637279707465645f636f6e74656e745f646174615f34',
+ 'gAAAAABhZ2J6...wrapped_K_Note_4...',
+ '{"iv_title":"bcd890efg123","iv_content":"efg123hij456","iv_key":"hij456klm789"}'),
+
+-- Bob's notes
+('660e8400-e29b-41d4-a716-446655440005', 
+ '550e8400-e29b-41d4-a716-446655440003',
+ 'U2FsdGVkX1+encrypted_title_data_5',
+ X'53616c7465645f5f656e637279707465645f636f6e74656e745f646174615f35',
+ 'gAAAAABhZ2J7...wrapped_K_Note_5...',
+ '{"iv_title":"klm789nop012","iv_content":"nop012qrs345","iv_key":"qrs345tuv678"}'),
+
+-- Charlie's notes
+('660e8400-e29b-41d4-a716-446655440006', 
+ '550e8400-e29b-41d4-a716-446655440004',
+ 'U2FsdGVkX1+encrypted_title_data_6',
+ X'53616c7465645f5f656e637279707465645f636f6e74656e745f646174615f36',
+ 'gAAAAABhZ2J8...wrapped_K_Note_6...',
+ '{"iv_title":"tuv678wxy901","iv_content":"wxy901zab234","iv_key":"zab234cde567"}');
+
+-- =====================================================
+-- TABLE: shared_links
+-- Public shared links with advanced security features
+-- =====================================================
+INSERT INTO shared_links (id, owner_id, content_enc, sender_public_key, expires_at, max_views, current_views, has_password, access_hash, is_active) VALUES 
+-- Link không hết hạn, không limit views, không password
+('770e8400-e29b-41d4-a716-446655440001', 
+ '550e8400-e29b-41d4-a716-446655440001',
+ X'53616c7465645f5f7368617265645f636f6e74656e745f31',
+ 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5KzVm...',
+ NULL,
+ NULL,
+ 0,
+ FALSE,
+ NULL,
+ TRUE),
+
+-- Link hết hạn sau 7 ngày, max 10 views, có password
+('770e8400-e29b-41d4-a716-446655440002', 
+ '550e8400-e29b-41d4-a716-446655440002',
+ X'53616c7465645f5f7368617265645f636f6e74656e745f32',
+ 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7LnYp...',
+ datetime('now', '+7 days'),
+ 10,
+ 3,
+ TRUE,
+ 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+ TRUE),
+
+-- Link hết hạn sau 24h, max 1 view (one-time link)
+('770e8400-e29b-41d4-a716-446655440003', 
+ '550e8400-e29b-41d4-a716-446655440003',
+ X'53616c7465645f5f7368617265645f636f6e74656e745f33',
+ 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9MqTz...',
+ datetime('now', '+1 day'),
+ 1,
+ 0,
+ FALSE,
+ NULL,
+ TRUE),
+
+-- Link đã bị revoke (is_active = FALSE)
+('770e8400-e29b-41d4-a716-446655440004', 
+ '550e8400-e29b-41d4-a716-446655440004',
+ X'53616c7465645f5f7368617265645f636f6e74656e745f34',
+ 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1NrWu...',
+ datetime('now', '+30 days'),
+ NULL,
+ 0,
+ FALSE,
+ NULL,
+ FALSE),
+
+-- Link đã hết hạn (expired)
+('770e8400-e29b-41d4-a716-446655440005', 
+ '550e8400-e29b-41d4-a716-446655440001',
+ X'53616c7465645f5f7368617265645f636f6e74656e745f35',
+ NULL,
+ datetime('now', '-1 day'),
+ 5,
+ 2,
+ FALSE,
+ NULL,
+ TRUE),
+
+-- Link đã đạt max views (current_views >= max_views)
+('770e8400-e29b-41d4-a716-446655440006', 
+ '550e8400-e29b-41d4-a716-446655440002',
+ X'53616c7465645f5f7368617265645f636f6e74656e745f36',
+ NULL,
+ datetime('now', '+7 days'),
+ 3,
+ 3,
+ FALSE,
+ NULL,
+ TRUE);
+
+-- =====================================================
+-- TABLE: refresh_tokens
+-- Sample refresh tokens for testing
+-- =====================================================
+INSERT INTO refresh_tokens (id, user_id, token_hash, expires_at, is_revoked) VALUES 
+-- Active tokens
+('880e8400-e29b-41d4-a716-446655440001',
+ '550e8400-e29b-41d4-a716-446655440001',
+ 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
+ datetime('now', '+30 days'),
+ FALSE),
+
+('880e8400-e29b-41d4-a716-446655440002',
+ '550e8400-e29b-41d4-a716-446655440002',
+ 'b665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
+ datetime('now', '+30 days'),
+ FALSE),
+
+-- Revoked token
+('880e8400-e29b-41d4-a716-446655440003',
+ '550e8400-e29b-41d4-a716-446655440003',
+ 'c665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
+ datetime('now', '+30 days'),
+ TRUE),
+
+-- Expired token
+('880e8400-e29b-41d4-a716-446655440004',
+ '550e8400-e29b-41d4-a716-446655440004',
+ 'd665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
+ datetime('now', '-1 day'),
+ FALSE);
+
+-- =====================================================
+-- TABLE: token_blacklist
+-- Blacklisted JWT tokens (logged out or revoked)
+-- =====================================================
+INSERT INTO token_blacklist (jti, expires_at, reason) VALUES 
+-- Recently blacklisted (logout)
+('990e8400-e29b-41d4-a716-446655440001',
+ datetime('now', '+1 day'),
+ 'logout'),
+
+-- Security revoke
+('990e8400-e29b-41d4-a716-446655440002',
+ datetime('now', '+2 days'),
+ 'security'),
+
+-- Admin force logout
+('990e8400-e29b-41d4-a716-446655440003',
+ datetime('now', '+3 days'),
+ 'admin_revoke'),
+
+-- Already expired (should be cleaned up)
+('990e8400-e29b-41d4-a716-446655440004',
+ datetime('now', '-1 hour'),
+ 'logout');
+
+-- =====================================================
+-- SUMMARY
+-- =====================================================
+-- Users: 4 (admin, alice, bob, charlie)
+-- User Keys: 4 DH public keys
+-- Notes: 6 encrypted notes
+-- Shared Links: 6 (with various states: active, expired, revoked, max_views_reached)
+-- Refresh Tokens: 4 (active, revoked, expired)
+-- Token Blacklist: 4 (various reasons)
+-- =====================================================
+

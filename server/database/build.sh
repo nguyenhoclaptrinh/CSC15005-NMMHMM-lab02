@@ -2,9 +2,9 @@
 
 set -e
 
-DB_PATH="./database.db"
-SCHEMA_FILE="./table.sql"
-SEED_FILE="./seed.sql"
+DB_PATH="./database/database.db"
+SCHEMA_FILE="./database/schema.sql"
+SEED_FILE="./database/seed.sql"
 
 # ==== Xử lý Arguments ====
 DROP=true
