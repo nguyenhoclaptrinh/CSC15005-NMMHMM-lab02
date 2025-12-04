@@ -157,9 +157,9 @@ INSERT INTO refresh_tokens (id, user_id, token_hash, expires_at, is_revoked, cre
     'g0eebc99-9c0b-4ef8-bb6d-6bb9bd380aaa',
     'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     'abc123def456ghi789jkl012mno345pqr678stu901vwx234yza567bcd890efg123',
-    CURRENT_TIMESTAMP + INTERVAL '7 days',
-    FALSE,
-    CURRENT_TIMESTAMP
+    datetime('now', '+7 days'),
+    0,
+    datetime('now')
 );
 
 -- Expired refresh token for bob (for testing cleanup)
@@ -168,9 +168,9 @@ INSERT INTO refresh_tokens (id, user_id, token_hash, expires_at, is_revoked, cre
     'g1ffbc99-9c0b-4ef8-bb6d-6bb9bd380bbb',
     'b1ffbc99-9c0b-4ef8-bb6d-6bb9bd380a22',
     'xyz789uvw012rst345opq678lmn901ijk234fgh567cde890abc123def456ghi789',
-    CURRENT_TIMESTAMP - INTERVAL '1 day',  -- Expired 1 day ago
-    FALSE,
-    CURRENT_TIMESTAMP - INTERVAL '8 days'
+    datetime('now', '-1 day'),  -- Expired 1 day ago
+    0,
+    datetime('now', '-8 days')
 );
 
 -- Revoked refresh token for charlie
@@ -179,9 +179,9 @@ INSERT INTO refresh_tokens (id, user_id, token_hash, expires_at, is_revoked, cre
     'g2ggcc99-9c0b-4ef8-bb6d-6bb9bd380ccc',
     'c2ggcc99-9c0b-4ef8-bb6d-6bb9bd380a33',
     'mno345pqr678stu901vwx234yza567bcd890efg123abc456def789ghi012jkl345',
-    CURRENT_TIMESTAMP + INTERVAL '7 days',
-    TRUE,   -- Revoked
-    CURRENT_TIMESTAMP
+    datetime('now', '+7 days'),
+    1,   -- Revoked
+    datetime('now')
 );
 
 -- ============================================================

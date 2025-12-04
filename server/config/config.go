@@ -18,7 +18,8 @@ func LoadConfig() (*Config, error) {
     }
     dbPath := os.Getenv("DB_PATH")
     if dbPath == "" {
-        dbPath = "secure_notes.db"
+        // Default database path in server/database/ folder
+        dbPath = "server/database/secure_notes.db"
     }
     return &Config{Port: port, DBPath: dbPath}, nil
 }
