@@ -1,25 +1,25 @@
 package config
 
 import (
-    "os"
+	"os"
 )
 
 // Config holds minimal server configuration used by main.
 type Config struct {
-    Port   string
-    DBPath string
+	Port   string
+	DBPath string
 }
 
 // LoadConfig loads configuration from environment variables with sensible defaults.
 func LoadConfig() (*Config, error) {
-    port := os.Getenv("SERVER_PORT")
-    if port == "" {
-        port = "8080"
-    }
-    dbPath := os.Getenv("DB_PATH")
-    if dbPath == "" {
-        // Default database path in server/database/ folder
-        dbPath = "server/database/secure_notes.db"
-    }
-    return &Config{Port: port, DBPath: dbPath}, nil
+	port := os.Getenv("SERVER_PORT")
+	if port == "" {
+		port = "8080"
+	}
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		// Default database path in server/database/ folder
+		dbPath = "server/database/secure_notes.db"
+	}
+	return &Config{Port: port, DBPath: dbPath}, nil
 }
