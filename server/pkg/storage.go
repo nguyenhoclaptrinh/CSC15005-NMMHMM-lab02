@@ -1,4 +1,4 @@
-package serverpkg
+package pkg
 
 import (
 	"database/sql"
