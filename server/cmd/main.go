@@ -28,6 +28,7 @@ func main() {
 	// 4. Auth routes
 	r.POST("/api/register", serverpkg.Register)
 	r.POST("/api/login", serverpkg.Login)
+	r.POST("/api/logout", serverpkg.Logout)
 
 	// 5. Notes routes
 	notes := r.Group("/api/notes")
@@ -36,9 +37,9 @@ func main() {
 		notes.POST("", serverpkg.UploadNote)
 		notes.GET("/:id", serverpkg.GetNote)
 		notes.DELETE("/:id", serverpkg.DeleteNote)
-		notes.POST("/:id/share", serverpkg.ShareNote)
-		notes.GET("/:id/share", serverpkg.ListShares)
-		notes.DELETE("/:id/share/:share_id", serverpkg.RevokeShare)
+		// notes.POST("/:id/share", serverpkg.ShareNote)
+		// notes.GET("/:id/share", serverpkg.ListShares)
+		// notes.DELETE("/:id/share/:share_id", serverpkg.RevokeShare)
 	}
 
 	// 6. Temp URL access (may be anonymous) - not implemented
