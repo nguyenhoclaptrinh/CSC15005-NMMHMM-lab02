@@ -28,6 +28,7 @@ func main() {
 	// 4. Auth routes
 	r.POST("/api/register", serverpkg.Register)
 	r.POST("/api/login", serverpkg.Login)
+	r.POST("/api/logout", serverpkg.Logout)
 
 	// 5. Notes routes
 	notes := r.Group("/api/notes")
