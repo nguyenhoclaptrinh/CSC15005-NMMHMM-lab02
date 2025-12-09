@@ -8,6 +8,130 @@ import (
 )
 
 // ============================================================
+// SHARE NOTE TO USER APIs - Chia sẻ note cho user khác
+// ============================================================
+
+// ShareNote - Chia sẻ ghi chú cho user khác trong hệ thống
+// POST /api/notes/:id/share
+// Request: { "shared_to_user_id": "uuid", "aes_key_encrypted": "..." }
+// Response: { "message": "note shared successfully" }
+func ShareNote(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	noteID := c.Param("id")
+
+	var req struct {
+		SharedToUserID  string `json:"shared_to_user_id" binding:"required"`
+		AESKeyEncrypted string `json:"aes_key_encrypted" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	db := GetDB()
+
+	// Kiểm tra quyền sở hữu note
+	var ownerID string
+	err := db.QueryRow("SELECT user_id FROM notes WHERE id = ?", noteID).Scan(&ownerID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "note not found"})
+		return
+	}
+
+	if ownerID != userID.(string) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "only owner can share"})
+		return
+	}
+
+	// Kiểm tra user nhận có tồn tại
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM users WHERE id = ?", req.SharedToUserID).Scan(&count)
+	if err != nil || count == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "shared user not found"})
+		return
+	}
+
+	// TODO: Lưu vào bảng note_shares (cần tạo bảng này trong migration)
+	// Tạm thời response success
+	c.JSON(http.StatusOK, gin.H{
+		"message": "note shared successfully",
+	})
+}
+
+// ListShares - Liệt kê các user đã được chia sẻ note
+// GET /api/notes/:id/share
+// Response: [ { "user_id": "uuid", "username": "...", "shared_at": "..." }, ... ]
+func ListShares(c *gin.Context) {
+	noteID := c.Param("id")
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	db := GetDB()
+
+	// Kiểm tra quyền sở hữu
+	var ownerID string
+	err := db.QueryRow("SELECT user_id FROM notes WHERE id = ?", noteID).Scan(&ownerID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "note not found"})
+		return
+	}
+
+	if ownerID != userID.(string) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "only owner can view shares"})
+		return
+	}
+
+	// TODO: Query bảng note_shares
+	// Tạm thời trả về empty array
+	shares := []map[string]interface{}{}
+
+	c.JSON(http.StatusOK, shares)
+}
+
+// RevokeShare - Thu hồi quyền chia sẻ
+// DELETE /api/notes/:id/share/:share_id
+// Response: { "message": "share revoked successfully" }
+func RevokeShare(c *gin.Context) {
+	noteID := c.Param("id")
+	sharedUserID := c.Param("share_id")
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	db := GetDB()
+
+	// Kiểm tra quyền sở hữu
+	var ownerID string
+	err := db.QueryRow("SELECT user_id FROM notes WHERE id = ?", noteID).Scan(&ownerID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "note not found"})
+		return
+	}
+
+	if ownerID != userID.(string) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "only owner can revoke share"})
+		return
+	}
+
+	// TODO: Delete from note_shares table
+	// Tạm thời response success
+	c.JSON(http.StatusOK, gin.H{
+		"message": "share revoked successfully",
+	})
+}
+
+// ============================================================
 // SHARE URL APIs - Temporary/Anonymous Share Links
 // ============================================================
 
