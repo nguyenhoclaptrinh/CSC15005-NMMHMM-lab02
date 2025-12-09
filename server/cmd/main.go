@@ -37,9 +37,9 @@ func main() {
 		notes.POST("", serverpkg.UploadNote)
 		notes.GET("/:id", serverpkg.GetNote)
 		notes.DELETE("/:id", serverpkg.DeleteNote)
-		notes.POST("/:id/share", serverpkg.ShareNote)
-		notes.GET("/:id/share", serverpkg.ListShares)
-		notes.DELETE("/:id/share/:share_id", serverpkg.RevokeShare)
+		// notes.POST("/:id/share", serverpkg.ShareNote)
+		// notes.GET("/:id/share", serverpkg.ListShares)
+		// notes.DELETE("/:id/share/:share_id", serverpkg.RevokeShare)
 	}
 
 	// 6. Temp URL access (may be anonymous) - not implemented

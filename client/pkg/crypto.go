@@ -1,4 +1,4 @@
-package pkg
+package serverpkg
 
 import (
 	"crypto/rand"
